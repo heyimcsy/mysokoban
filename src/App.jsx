@@ -234,7 +234,7 @@ function ClearOverlay({ allClear, level, moves, onNext, onReplay, onHome }) {
           <>
             <div className="overlay-emoji">🏆</div>
             <h2>전체 클리어!</h2>
-            <p>10단계를 모두 완료했어요. 멋져요!</p>
+            <p>{LEVELS.length}단계를 모두 완료했어요. 멋져요!</p>
             <button className="primary-btn" onClick={onHome}>처음으로</button>
           </>
         ) : (
