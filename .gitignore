@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# 환경변수 — 실제 값은 커밋하지 않는다 (.env.example 템플릿만 커밋)
+.env
+.env.*
+!.env.example

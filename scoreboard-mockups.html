@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>소코반 · 점수판 시안 3종</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --brick: #9a563a;
+    --brick-hi: #b16a49;
+    --brick-dark: #7c4329;
+    --mortar: #5a3825;
+    --mortar-deep: #40261a;
+    --floor: #e3cdab;
+    --cream: #f4e5cd;
+    --cream-2: #f1dec3;
+    --ink: #3a2417;
+    --ink-soft: #6b4a33;
+    --accent: #e07b39;
+    --accent-dark: #c4632a;
+    --apple: #e04b3f;
+    --apple-lit: #ff5a4a;
+    --gold: #ffd34d;
+    --wood: #cf9351;
+    --wood-dark: #9c611f;
+    --wood-line: rgba(90, 50, 20, 0.55);
+
+    --sans: 'AppleSDGothicNeo-Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      system-ui, sans-serif;
+    --display: 'Do Hyeon', var(--sans);
+    --round: 'Jua', var(--sans);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; min-height: 100%; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: radial-gradient(120% 90% at 50% -10%, #b9714c 0%, #8a4a2f 45%, #5f311e 100%)
+      fixed;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 18px 72px;
+  }
+
+  .page { width: min(560px, 100%); margin: 0 auto; }
+
+  /* ---------- 페이지 헤더 ---------- */
+  .page-head { text-align: center; margin-bottom: 30px; color: #fff5ec; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.9;
+    margin-bottom: 10px;
+  }
+  .page-head h1 {
+    font-family: var(--display);
+    font-size: 38px;
+    font-weight: 400;
+    margin: 0 0 10px;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+  .page-head p {
+    margin: 0 auto;
+    max-width: 30em;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 245, 236, 0.82);
+  }
+  .page-head .tap-hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255, 245, 236, 0.62);
+  }
+  .page-head .tap-hint b { color: var(--gold); font-weight: 700; }
+
+  /* ---------- 시안 카드 ---------- */
+  .proposal { margin-top: 26px; }
+  .proposal__head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .proposal__tag {
+    flex: none;
+    font-family: var(--display);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--mortar);
+    background: var(--gold);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .proposal__name {
+    margin: 0;
+    font-family: var(--round);
+    font-size: 20px;
+    font-weight: 400;
+    color: #fff5ec;
+  }
+  .proposal__name span { font-family: var(--sans); font-size: 12px; opacity: 0.6; margin-left: 6px; letter-spacing: 0.05em; }
+  .proposal__desc {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 245, 236, 0.72);
+  }
+
+  /* 실제 게임 배경 위에 점수판을 얹어 맥락을 준다 */
+  .stage {
+    position: relative;
+    background: radial-gradient(130% 120% at 50% -30%, #a15a38 0%, #7a4028 60%, #532b1a 100%);
+    border-radius: 16px;
+    padding: 16px 14px 22px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+  }
+  /* 점수판 아래로 보드 상단을 살짝 비쳐 문맥을 잡아준다 */
+  .stage::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: -16px;
+    height: 40px;
+    border-radius: 12px 12px 0 0;
+    background: var(--mortar);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 3px rgba(0, 0, 0, 0.18);
+    opacity: 0.9;
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; color: inherit; }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  /* ==================================================================
+     시안 1 — 벽돌 쌓기 (Brick Course)
+     단계 진행 = 벽돌 한 켜를 쌓는 것. 이동/사과는 벽에 박은 명패.
+  ================================================================== */
+  .hud1 {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, var(--brick-hi), var(--brick-dark));
+    box-shadow:
+      inset 0 0 0 1.5px var(--mortar),
+      inset 2px 2px 3px rgba(255, 255, 255, 0.16),
+      inset -2px -4px 7px rgba(0, 0, 0, 0.4),
+      0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+  .h1-menu {
+    flex: none;
+    width: 40px; height: 40px;
+    font-size: 18px;
+    color: #fff2e4;
+    border-radius: 9px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.32));
+    box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.3), inset 0 2px 3px rgba(255,255,255,0.12);
+    transition: transform 0.08s ease;
+  }
+  .h1-menu:active { transform: scale(0.92); }
+
+  .h1-progress { flex: 1; min-width: 0; }
+  .h1-course {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    padding: 4px;
+    border-radius: 6px;
+    background: var(--mortar-deep);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  .h1-brick {
+    height: 13px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+    transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.2,1.3,0.5,1);
+  }
+  .h1-brick.is-laid {
+    background: linear-gradient(180deg, #c07049, #94512f);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.28),
+      inset 0 -2px 2px rgba(0, 0, 0, 0.4);
+  }
+  .h1-brick.is-current {
+    background: linear-gradient(180deg, #e88a4f, #c26a33);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.4),
+      0 0 8px rgba(255, 180, 90, 0.65);
+    animation: brick-lay 0.35s cubic-bezier(0.2, 1.3, 0.5, 1);
+  }
+  @keyframes brick-lay {
+    from { transform: translateY(-90%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .h1-caption {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: rgba(255, 240, 226, 0.78);
+  }
+  .h1-caption b {
+    font-family: var(--display);
+    font-size: 15px;
+    color: #fff;
+    margin-right: 1px;
+  }
+
+  .h1-stats { flex: none; display: flex; gap: 7px; }
+  .h1-tile {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: linear-gradient(180deg, var(--cream), var(--cream-2));
+    box-shadow:
+      inset 0 0 0 1px rgba(124, 67, 41, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 2px 4px rgba(0, 0, 0, 0.28);
+  }
+  .h1-tile__ico { font-size: 15px; line-height: 1; }
+  .h1-tile b {
+    font-family: var(--display);
+    font-size: 17px;
+    color: var(--mortar);
+    font-variant-numeric: tabular-nums;
+    min-width: 1ch;
+    text-align: center;
+  }
+  .h1-tile--apple b { color: var(--apple-dark, #b33a2f); }
+
+  /* ==================================================================
+     시안 2 — 나무 궤짝 태그 (Crate Tags)
+     밀고 다니는 상자와 같은 나무 결. 숫자는 나무에 새긴 낙인.
+  ================================================================== */
+  .hud2 {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: stretch;
+    gap: 9px;
+  }
+  .h2-menu {
+    flex: none;
+    display: flex;
+    align-items: center;
+    padding: 0 13px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff1df;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.08s ease;
+  }
+  .h2-menu:active { transform: scale(0.94); }
+
+  .h2-plate {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(90deg, rgba(90,50,20,0.10) 0 10px, rgba(255,240,210,0.05) 10px 20px),
+      linear-gradient(160deg, var(--wood) 0%, var(--wood-dark) 100%);
+    box-shadow:
+      inset 0 0 0 2.5px var(--wood-line),
+      inset 0 0 0 4px rgba(214, 162, 102, 0.4),
+      0 4px 8px rgba(0, 0, 0, 0.32);
+  }
+  /* 궤짝의 X자 보강대 모티프를 아주 옅게 */
+  .h2-plate::before,
+  .h2-plate::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 6%; right: 6%;
+    height: 2px;
+    background: rgba(90, 50, 20, 0.22);
+    pointer-events: none;
+  }
+  .h2-plate::before { transform: translateY(-50%) rotate(20deg); }
+  .h2-plate::after { transform: translateY(-50%) rotate(-20deg); }
+
+  .h2-label {
+    position: relative;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    color: rgba(64, 34, 16, 0.72);
+    text-shadow: 0 1px 0 rgba(255, 240, 210, 0.4);
+  }
+  .h2-num {
+    position: relative;
+    font-family: var(--display);
+    font-size: 22px;
+    line-height: 1;
+    color: #4a2a13;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 0 rgba(255, 235, 200, 0.45), 0 -1px 1px rgba(0, 0, 0, 0.25);
+  }
+  .h2-num i { font-family: var(--sans); font-style: normal; font-size: 12px; opacity: 0.6; }
+
+  .h2-plate--stage { flex: 1.3; }
+  .h2-plate--moves { flex: 1; }
+  .h2-plate--apple {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+  }
+  .h2-ico { position: relative; font-size: 19px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
+
+  /* ==================================================================
+     시안 3 — 아늑한 크림 패널 (Cozy Cream Panel)
+     조용한 안. 단계는 얇은 10칸 트랙(놓인 벽돌)으로.
+  ================================================================== */
+  .hud3 {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 15px;
+    background: linear-gradient(180deg, rgba(255, 250, 243, 0.97), rgba(246, 232, 210, 0.95));
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  }
+  .h3-menu {
+    flex: none;
+    width: 38px; height: 38px;
+    font-size: 17px;
+    color: var(--mortar);
+    border-radius: 11px;
+    background: #e7d3b2;
+    box-shadow: inset 0 0 0 1px rgba(124, 67, 41, 0.16);
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+  .h3-menu:active { transform: scale(0.92); background: #e0c8a2; }
+
+  .h3-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 12px;
+    border-radius: 11px;
+  }
+  .h3-stat--stage { flex: 1; }
+  .h3-stat--metric {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(154, 86, 58, 0.07);
+  }
+  .h3-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .h3-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    opacity: 0.8;
+  }
+  .h3-val {
+    font-family: var(--display);
+    font-size: 19px;
+    line-height: 1;
+    color: var(--mortar);
+    font-variant-numeric: tabular-nums;
+  }
+  .h3-val i { font-family: var(--sans); font-style: normal; font-size: 11px; opacity: 0.55; }
+  .h3-ico { font-size: 16px; }
+  .h3-stat--apple .h3-val { color: #c0392c; }
+
+  .h3-track {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    margin-top: 5px;
+  }
+  .h3-seg {
+    height: 6px;
+    border-radius: 2px;
+    background: rgba(124, 67, 41, 0.16);
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+  .h3-seg.is-on {
+    background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+    box-shadow: 0 1px 2px rgba(196, 99, 42, 0.5);
+  }
+  .h3-seg.is-current { animation: seg-pop 0.3s ease; }
+  @keyframes seg-pop { 0% { transform: scaleY(0.3); } 60% { transform: scaleY(1.4); } 100% { transform: scaleY(1); } }
+
+  /* 공통: 사과 카운터가 올라갈 때 통통 튐 */
+  .pop { animation: count-pop 0.34s ease; }
+  @keyframes count-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.5); color: var(--gold); }
+    100% { transform: scale(1); }
+  }
+
+  @media (max-width: 380px) {
+    .h1-tile { padding: 6px 8px; }
+    .h2-num { font-size: 19px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-head">
+      <span class="eyebrow">소코반 · UI 시안</span>
+      <h1>점수판 리디자인</h1>
+      <p>단계 · 이동 · 사과를 보여주는 상단 점수판 3종입니다. 셋 다 현재 벽돌집의
+        따뜻한 톤을 그대로 지키면서, 서로 다른 재질감으로 승부를 걸었어요.</p>
+      <p class="tap-hint">각 점수판을 <b>탭</b>하면 반응(사과 +1 · 다음 단계)을 미리 볼 수 있어요.</p>
+    </header>
+
+    <!-- ===================== 시안 1 ===================== -->
+    <section class="proposal">
+      <div class="proposal__head">
+        <span class="proposal__tag">시안 1</span>
+        <h2 class="proposal__name">벽돌 쌓기 <span>Brick Course</span></h2>
+      </div>
+      <p class="proposal__desc">단계 진행을 곧 <b>집을 짓는 벽돌 한 켜</b>로 보여줍니다.
+        한 단계를 깰 때마다 벽돌이 한 장씩 놓이고, 이동·사과는 벽에 박은 명패로.</p>
+      <div class="stage">
+        <div class="hud1" data-hud="1">
+          <button class="h1-menu" aria-label="메뉴로">←</button>
+          <div class="h1-progress">
+            <div class="h1-course" id="course"></div>
+            <div class="h1-caption"><b id="stage1">3</b>/ 10 단계 · 벽돌집 짓는 중</div>
+          </div>
+          <div class="h1-stats">
+            <div class="h1-tile"><span class="h1-tile__ico">👣</span><b>24</b></div>
+            <div class="h1-tile h1-tile--apple"><span class="h1-tile__ico">🍎</span><b id="apple1">2</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 시안 2 ===================== -->
+    <section class="proposal">
+      <div class="proposal__head">
+        <span class="proposal__tag">시안 2</span>
+        <h2 class="proposal__name">나무 궤짝 태그 <span>Crate Tags</span></h2>
+      </div>
+      <p class="proposal__desc">밀고 다니는 <b>상자와 똑같은 나무 결</b>의 태그.
+        숫자는 나무에 새긴 낙인처럼, X자 보강대 모티프까지 상자 세계 그대로.</p>
+      <div class="stage">
+        <div class="hud2" data-hud="2">
+          <button class="h2-menu" aria-label="메뉴로">← 메뉴</button>
+          <div class="h2-plate h2-plate--stage">
+            <span class="h2-label">단계</span>
+            <span class="h2-num"><span id="stage2">3</span><i>/10</i></span>
+          </div>
+          <div class="h2-plate h2-plate--moves">
+            <span class="h2-label">이동</span>
+            <span class="h2-num">24</span>
+          </div>
+          <div class="h2-plate h2-plate--apple">
+            <span class="h2-ico">🍎</span>
+            <span class="h2-num" id="apple2">2</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 시안 3 ===================== -->
+    <section class="proposal">
+      <div class="proposal__head">
+        <span class="proposal__tag">시안 3</span>
+        <h2 class="proposal__name">아늑한 크림 패널 <span>Cozy Cream Panel</span></h2>
+      </div>
+      <p class="proposal__desc">시작 화면과 같은 <b>크림빛 패널</b> 하나에 조용히 담은 버전.
+        단계는 얇은 10칸 트랙(놓인 벽돌)으로 한눈에.</p>
+      <div class="stage">
+        <div class="hud3" data-hud="3">
+          <button class="h3-menu" aria-label="메뉴로">←</button>
+          <div class="h3-stat h3-stat--stage">
+            <div class="h3-row">
+              <span class="h3-label">단계</span>
+              <span class="h3-val"><span id="stage3">3</span><i>/10</i></span>
+            </div>
+            <div class="h3-track" id="track"></div>
+          </div>
+          <div class="h3-stat h3-stat--metric">
+            <span class="h3-ico">👣</span>
+            <span class="h3-val">24</span>
+          </div>
+          <div class="h3-stat h3-stat--metric h3-stat--apple">
+            <span class="h3-ico">🍎</span>
+            <span class="h3-val" id="apple3">2</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 데모 상태 (실제 게임은 리듀서가 관리)
+    const state = { stage: 3, apples: 2 };
+    const TOTAL = 10;
+
+    // 시안 1 벽돌 켜 렌더
+    const course = document.getElementById('course');
+    // 시안 3 트랙 렌더
+    const track = document.getElementById('track');
+
+    function renderStage(justAdvanced) {
+      // 시안 1
+      course.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const b = document.createElement('span');
+        b.className = 'h1-brick' + (i <= state.stage ? ' is-laid' : '');
+        if (i === state.stage && justAdvanced) b.classList.add('is-current');
+        course.appendChild(b);
+      }
+      document.getElementById('stage1').textContent = state.stage;
+      // 시안 2
+      document.getElementById('stage2').textContent = state.stage;
+      // 시안 3
+      track.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const s = document.createElement('span');
+        s.className = 'h3-seg' + (i <= state.stage ? ' is-on' : '');
+        if (i === state.stage && justAdvanced) s.classList.add('is-current');
+        track.appendChild(s);
+      }
+      document.getElementById('stage3').textContent = state.stage;
+    }
+
+    function bumpApple() {
+      state.apples += 1;
+      ['apple1', 'apple2', 'apple3'].forEach((id) => {
+        const el = document.getElementById(id);
+        el.textContent = state.apples;
+        el.classList.remove('pop');
+        void el.offsetWidth; // reflow로 애니메이션 재시작
+        el.classList.add('pop');
+      });
+    }
+
+    function advanceStage() {
+      state.stage = (state.stage % TOTAL) + 1;
+      renderStage(true);
+    }
+
+    // 탭 데모: 각 점수판을 누르면 사과 +1 → 잠시 뒤 다음 단계
+    document.querySelectorAll('[data-hud]').forEach((hud) => {
+      hud.addEventListener('click', () => {
+        bumpApple();
+        clearTimeout(hud._t);
+        hud._t = setTimeout(advanceStage, 260);
+      });
+    });
+
+    renderStage(false);
+  </script>
+</body>
+</html>
